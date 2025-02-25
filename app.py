@@ -20,6 +20,7 @@ if not OPENAI_API_KEY:
 # Set the API key for OpenAI
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
+# main chat function
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
