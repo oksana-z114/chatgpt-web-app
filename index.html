@@ -2,22 +2,126 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with AI</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Support</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <div class="chat-container">
-        <h1>Chat with AI</h1>
-        <div id="chat-box"></div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Type a message...">
-            <button id="send-btn">Send</button>
+
+    <!-- Floating Chat Widget -->
+    <div class="chat-widget" id="chatWidget">
+
+        <!-- HEADER: Avatar, Title/Subheader, Status, Actions -->
+        <div class="chat-header">
+            <div class="header-left">
+                <!-- Avatar + Status Container -->
+                <div class="avatar-status">
+                    <img class="avatar" src="Chat_bot_logo.png" alt="Chat Avatar" />
+                    <span class="status-dot online"></span>
+                </div>
+                <div class="header-text">
+                    <h3 class="bot-title">Chat Support</h3>
+                    <p class="bot-subtitle">Hi, I am Chatty. Hope you have a good day.</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="refresh-btn" title="Refresh">&#x27f3;</button>
+                <button class="expand-btn" title="Expand">&#x2922;</button>
+                <button class="minimize-btn" title="Minimize">&#x2212;</button>
+            </div>
         </div>
+
+        <!-- DATE (Optional) -->
+        <div class="chat-date">October 15, 2025</div>
+
+        <!-- Chat Scroll Area -->
+        <div class="chat-body" id="chatBody">
+            <!-- SAMPLE BOT MESSAGE -->
+            <div class="message ai-message">
+                <p>I am a clinic assistant chatbot! <span>🤗</span><br />
+                    Please feel free to seek my assistance for any of the following:<br />
+                    1. View Doctors & Consulting Hours<br />
+                    2. Book a Doctor Appointment<br />
+                    3. Cancel a Doctor Appointment<br />
+                    4. E-mail Me Appointment Details & Passcode<br />
+                    5. Ask a First-Aid Related Question<br />
+                    6. Contact Information<br />
+                    7. Our 24x7 Emergency Contacts<br />
+                    8. Wellness Tip Of The Day</p>
+            </div>
+        </div>
+
+        <!-- QUICK REPLY BUTTONS (Optional) -->
+        <div class="quick-replies">
+            <button class="quick-reply">Book a Doctor Appointment</button>
+            <button class="quick-reply">Cancel Appointment</button>
+            <button class="quick-reply">View Doctors & Hours</button>
+        </div>
+
+        <!-- MESSAGE INPUT AREA -->
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Write a message..." />
+            <button id="sendBtn">Send</button>
+        </div>
+
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // Example JavaScript (no real AI logic here)
+        const minimizeBtn = document.querySelector('.minimize-btn');
+        const expandBtn = document.querySelector('.expand-btn');
+        const chatWidget = document.getElementById('chatWidget');
+        const sendBtn = document.getElementById('sendBtn');
+        const userInput = document.getElementById('userInput');
+        const chatBody = document.getElementById('chatBody');
+        const quickReplies = document.querySelectorAll('.quick-reply');
+
+        // Minimize toggle
+        minimizeBtn.addEventListener('click', () => {
+            chatWidget.classList.toggle('minimized');
+        });
+
+        // Expand toggle
+        expandBtn.addEventListener('click', () => {
+            chatWidget.classList.toggle('expanded');
+        });
+
+        // Send message
+        sendBtn.addEventListener('click', () => {
+            const text = userInput.value.trim();
+            if (!text) return;
+            addMessage(text, 'user-message');
+            userInput.value = '';
+            // Fake bot reply after 1s
+            setTimeout(() => {
+                addMessage("Thank you for your message! (Placeholder reply)", 'ai-message');
+            }, 1000);
+        });
+
+        // Quick Replies
+        quickReplies.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.innerText;
+                addMessage(text, 'user-message');
+                // Fake bot reply
+                setTimeout(() => {
+                    addMessage("This is a quick-reply placeholder response!", 'ai-message');
+                }, 1000);
+            });
+        });
+
+        // Append message bubble
+        function addMessage(text, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', className);
+            messageDiv.innerHTML = `<p>${text}</p>`;
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    </script>
+
 </body>
 
 </html>
