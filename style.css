@@ -1,6 +1,6 @@
 /* PAGE BACKGROUND */
 body {
-    margin: 0;
+    margin: 25px;
     font-family: Arial, sans-serif;
     background-color: #f5ecfc;
     /* Light violet background */
@@ -22,7 +22,7 @@ body {
 
 /* MINIMIZE => Just show header */
 .chat-widget.minimized {
-    height: 60px;
+    height: 80px;
     overflow: hidden;
 }
 
@@ -34,15 +34,16 @@ body {
 
 /* HEADER */
 .chat-header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #9F7AEA;
-    /* Vibrant violet */
+    background: linear-gradient(to right, #b196e5, #9567eb, #6B46C1);
     padding: 10px 14px;
     color: #fff;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
+
 }
 
 /* HEADER LEFT: Avatar, text */
@@ -53,26 +54,38 @@ body {
 }
 
 /*Avatar */
-.avatar-status {
+.header-avatar-status {
     position: relative;
-    /* enables absolute positioning of the dot */
-    overflow: visible;
-    /* or use flex if needed */
-    width: 50px;
-    /* same width and height => perfect square */
-    height: 50px;
-    border-radius: 50%;
-    /* container is circular */
+    font-size: 16px;
+    width: fit-content;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
+    padding: 8px 12px;
     border-radius: 50%;
-
+    border: 0;
+    outline: none;
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    font-family: 'Inter', sans-serif;
+    font-size: 1em;
 }
 
+.answer-badge {
+    position: absolute;
+    top: -0px;
+    right: calc(100% - 25px);
+    text-wrap: nowrap;
+    background: #e74c3c;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 1px 5px;
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+    cursor: pointer;
+    font-size: 0.85em;
+}
 
 /* TEXT NEXT TO AVATAR */
 .header-text {
@@ -157,9 +170,27 @@ body {
 /* CHAT BODY */
 .chat-body {
     flex: 1;
-    background: #f8f5fe;
-    padding: 10px;
+    height: 400px;
+    /* Adjust as needed */
+    max-height: 400px;
+    /* Prevents excessive expansion */
     overflow-y: auto;
+    /* Enables scrolling */
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f8f8f8;
+}
+
+/* Hide scrollbar but allow scrolling (optional) */
+.chat-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
 }
 
 /* MESSAGE BUBBLES */
@@ -172,11 +203,41 @@ body {
 }
 
 /* AI MESSAGE: Light Purple bubble */
-.ai-message {
+.ai-message .mesage-text {
     background: #E0DCFA;
     color: #333;
     border-top-left-radius: 0;
     align-self: flex-start;
+}
+
+/* AI Message Avatar Next to Bubble */
+.ai-message {
+    display: flex;
+    background-color: #7045ba;
+    border-radius: 12px;
+    max-width: 65%;
+    padding: 10px 8px;
+    margin: 5px 10px;
+}
+
+.ai-avatar {
+    width: 40px;
+    /* Adjust size as needed */
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 5px;
+    /* Space between avatar and message */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ai-avatar img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 /* USER MESSAGE: Solid Violet bubble */
@@ -185,6 +246,29 @@ body {
     color: #fff;
     border-top-right-radius: 0;
     align-self: flex-end;
+    display: flex;
+    align-items: center;
+}
+
+/* Ensure User Messages are Aligned */
+.user-message .message-text {
+    background: #a385f7;
+    color: #ffffff;
+}
+
+.ai-message .message-text {
+    background: #e0d0fc;
+    max-width: 65%;
+    border-radius: 12px;
+    margin: -3px 1px;
+}
+
+.message-text {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+    max-width: 70%;
 }
 
 /* QUICK REPLIES */

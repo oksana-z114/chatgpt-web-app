@@ -1,0 +1,238 @@
+const chatBox = document.getElementById("chat-box");
+const userInput = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
+const chatWidget = document.getElementById("chatWidget");
+const quickReplies = document.querySelectorAll('.quick-reply');
+// let hasSentInitialMessage = false;  // Prevent multiple "Hi" messages on reopen
+
+const API_URL = "http://127.0.0.1:5000/chat";  // Ensure this matches 
+
+// Minimize Chat
+// document.querySelector('.minimize-btn').addEventListener('click', () => {
+//     chatWidget.classList.toggle('minimized');
+// });
+
+// // Expand Chat
+// document.querySelector('.expand-btn').addEventListener('click', () => {
+//     chatWidget.classList.toggle('expanded');
+// });
+// Event Listeners for Sending Messages
+// sendBtn.addEventListener("click", sendMessage);
+// userInput.addEventListener("keypress", (event) => {
+//     if (event.key === "Enter") sendMessage();
+// });
+
+async function sendMessage(userText = null) {
+    userText = userText || userInput.value.trim();
+    if (!userText) return;
+
+    addMessage(userText, "user-message");
+    userInput.value = '';
+
+    try {
+
+        console.log("Sending message to backend:", userText); // Debugging
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userText })
+        });
+
+        if (!response.ok) {
+            throw new Error("Server error: " + response.status);
+        }
+
+        const data = await response.json();
+        console.log("Response received from backend:", response);
+
+        addMessage(data.response || "Error: No response", "ai-message");
+    } catch (error) {
+        console.error("Error connecting to the server:", error);
+        addMessage("Error: Unable to connect to the server.", "ai-message");
+    }
+}
+// Handle Quick Replies
+quickReplies.forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const text = btn.innerText;
+        addMessage(text, "user-message");
+
+        try {
+            console.log("Sending quick reply:", text);
+            const botResponse = await fetchChatGPTResponse(text);
+            addMessage(botResponse, "ai-message");
+        } catch (error) {
+            addMessage("Error: Unable to process quick reply.", "ai-message");
+        }
+    });
+});
+
+// Function to add a message to the chat
+function addMessage(text, className) {
+    const chatBox = document.getElementById("chatBox");
+    if (!chatBox) {
+        console.error("chatBox not found in the DOM!");
+        return;
+    }
+
+    // Create message container
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", className);
+    messageDiv.innerHTML = `<p>${text}</p>`;
+
+    console.log("classname is")
+    console.log(className)
+
+    // Append AI avatar if it's a bot message
+    if (className === "ai-message") {
+        const avatarDiv = document.createElement("div");
+        avatarDiv.classList.add("ai-avatar");
+
+        const avatarImg = document.createElement("img");
+        avatarImg.src = "Chat_bot_logo.png";  // Ensure the correct path
+        avatarImg.alt = "ChatBot Avatar";
+
+        console.log("avatar image created in addMessage")
+        avatarDiv.appendChild(avatarImg);
+
+        // Append avatar **before** message
+        messageDiv.appendChild(avatarDiv);
+    }
+
+    // Append text after avatar
+    messageDiv.appendChild(messageTextDiv);
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+async function fetchChatGPTResponse(className) {
+    console.log("Sending request to:", API_URL);  // Debugging log
+
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);  // 10-second timeout
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: className }),
+            signal: controller.signal,  // Apply timeout signal
+        });
+
+        clearTimeout(timeout);  // Clear timeout if request completes
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch AI response. Status: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Received response:", data);  // Debugging log
+        return data.response;
+
+    } catch (error) {
+        console.error("Error fetching response:", error);
+        return "Oops! Something went wrong. Please try again.";
+    }
+}
+
+let answerCount = 1; // Start at 1 (or 0 if you prefer)
+const answerBadge = document.getElementById('answerCount');
+function botResponds() {
+    answerCount++;
+    answerBadge.textContent = answerCount;
+}
+
+async function sendInitialBotMessage() {
+    const chatBox = document.getElementById("chatBox");
+    if (!chatBox) {
+        console.error("chatBox not found in the DOM!");
+        return;
+    }
+
+    // Create bot message container
+    const botMessage = document.createElement("div");
+    botMessage.classList.add("message", "ai-message");
+
+    // Create avatar container
+    const avatarDiv = document.createElement("div");
+    avatarDiv.classList.add("ai-avatar");
+
+    // Create avatar image
+    const avatarImg = document.createElement("img");
+    avatarImg.src = "Chat_bot_logo.png";  // Ensure path is correct
+    avatarImg.alt = "ChatBot Avatar";
+
+    console.log("avatarImg created in SenInitialBotMessage")
+    avatarDiv.appendChild(avatarImg);
+    botMessage.appendChild(avatarDiv);
+
+    // Create message text container
+    const messageTextDiv = document.createElement("div");
+    messageTextDiv.classList.add("message-text");
+    messageTextDiv.innerHTML = `<p>Loading...</p>`; // Placeholder
+
+    botMessage.appendChild(messageTextDiv);
+    chatBox.appendChild(botMessage);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+        // Fetch AI response
+        const aiResponse = await fetchChatGPTResponse("Hi");
+
+        // Update message text with actual response
+        messageTextDiv.querySelector("p").textContent = aiResponse;
+    } catch (error) {
+        // If request fails, update with error message
+        messageTextDiv.querySelector("p").textContent = "Error: Unable to connect.";
+        console.error("Failed to fetch AI response:", error);
+    }
+}
+
+// Function to update the chat date
+function updateChatDate() {
+    const chatDateElement = document.getElementById("chat-date");
+    if (!chatDateElement) return;
+
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    chatDateElement.textContent = today.toLocaleDateString(undefined, options);
+}
+
+// Function to handle when chat is opened
+function handleChatOpen() {
+    if (!hasSentInitialMessage) {
+        sendMessage("Hi");  // Send auto-message
+        hasSentInitialMessage = true;
+    }
+}
+
+// Run when page loads
+document.addEventListener("DOMContentLoaded", () => {
+    updateChatDate();
+    handleChatOpen();
+    sendInitialBotMessage();
+
+    // Ensure minimize and expand buttons exist before adding event listeners
+    const minimizeBtn = document.querySelector('.minimize-btn');
+    const chatWidget = document.getElementById('chatWidget');
+    // sendBtn.addEventListener("click", sendMessage);
+
+    if (minimizeBtn && chatWidget) {
+        minimizeBtn.addEventListener('click', () => {
+            chatWidget.classList.toggle('minimized');
+        });
+    } else {
+        console.error("Error: .minimize-btn or chatWidget not found in the DOM");
+    }
+});
+
+// Ensure chat is open when clicked
+// chatWidget.addEventListener("click", handleChatOpen);
+
+function scrollToBottom() {
+    const chatBox = document.getElementById("chatBox");
+    chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: "smooth" });
+}
+
