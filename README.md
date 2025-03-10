@@ -1,4 +1,4 @@
-# 🗨️ ChatGPT Web Application (Begginer Friendly)
+# 🗨️ ChatGPT Web Application (Beginner Friendly)
 
 Welcome! This is a simple web-based chatbot application that uses **Flask** as the backend and integrates with **OpenAI's ChatGPT API**. The frontend is a user-friendly chat interface built with **HTML, CSS, and JavaScript**. 
 
